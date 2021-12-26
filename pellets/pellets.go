@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -26,6 +27,7 @@ func FetchPriceForLoosePellets(amountInKg int) PelletPrice {
 	fmt.Println("loose pellets:", amountInKg)
 
 	json.NewDecoder(resp.Body).Decode(&res)
+	res.NettoEinzelpreis = math.Round(res.NettoEinzelpreis*100) / 100
 
 	return res
 }
@@ -43,6 +45,7 @@ func FetchPriceForSackedPellets(amountInPalettes int) PelletPrice {
 	var res PelletPrice
 
 	json.NewDecoder(resp.Body).Decode(&res)
+	res.NettoEinzelpreis = math.Round(res.NettoEinzelpreis*100) / 100
 
 	return res
 }
@@ -77,10 +80,3 @@ func makeFormRequest(amount int, product string, unit string) url.Values {
 		"lieferstellen":        {"1"},
 	}
 }
-
-const (
-	Loose       = "P101"
-	Sacked      = "P104"
-	UnitKG      = "kg"
-	UnitPallete = "Pal."
-)
